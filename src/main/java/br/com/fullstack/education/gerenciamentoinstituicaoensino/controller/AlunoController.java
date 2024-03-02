@@ -25,4 +25,5 @@ public class AlunoController {
     public AlunoModel post(@RequestBody AlunoModel aluno) throws Exception {
         return alunoService.salvar(aluno);
     }
+
 }

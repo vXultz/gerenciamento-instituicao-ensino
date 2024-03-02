@@ -1,5 +1,6 @@
 package br.com.fullstack.education.gerenciamentoinstituicaoensino.service;
 
+import br.com.fullstack.education.gerenciamentoinstituicaoensino.model.AlunoModel;
 import br.com.fullstack.education.gerenciamentoinstituicaoensino.model.CursoModel;
 import org.springframework.stereotype.Service;
 
@@ -8,15 +9,32 @@ import java.util.List;
 @Service
 public class CursoService {
 
+    private final AlunoService alunoService;
+
+    public CursoService(AlunoService alunoService) {
+        this.alunoService = alunoService;
+    }
+
     public List<CursoModel> buscarTodos() {
         return CursoModel.getCursos();
     }
 
+    public CursoModel buscarPorId(Integer id) throws Exception {
+        return CursoModel.buscarPorId(id);
+    }
+
     public CursoModel salvar(CursoModel curso) throws Exception {
-        if (validar(curso)) {
-            return CursoModel.inserir(curso);
+        if (!validar(curso)) {
+            return null;
         }
-        return null;
+        return CursoModel.inserir(curso);
+    }
+
+    public CursoModel matricular(Integer id, Integer alunoId) throws Exception {
+        CursoModel curso = buscarPorId(id);
+        AlunoModel aluno = alunoService.buscarPorId(alunoId);
+        CursoModel.matricular(curso, aluno);
+        return curso;
     }
 
     private boolean validar(CursoModel curso) throws Exception {
@@ -25,8 +43,10 @@ public class CursoService {
         }
 
         if (curso.getCargaHoraria() == null) {
-            throw new Exception("Carga horária é obrigatória!");
+            throw new Exception("Carga horária é obrigatório!");
         }
+
         return true;
     }
+
 }
